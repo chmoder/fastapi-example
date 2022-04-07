@@ -7,7 +7,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel, constr, validator
 
 Base = declarative_base()
-engine = create_engine("sqlite:///:memory:", echo=True)
+# engine = create_engine("sqlite:///:memory:", echo=True)
+engine = create_engine("postgresql://tcross:abc123!@10.102.16.3:5432/fastapi-example")
 
 
 class MovieTitlesORM(Base):
