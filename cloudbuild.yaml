@@ -1,0 +1,42 @@
+# Required substituion variables:
+# - _fastapi_example_DOMAIN
+
+
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args:
+      - -c
+      - docker build -t gcr.io/chmoder-site/fastapi-example:v1 -f Dockerfile .
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/chmoder-site/fastapi-example:v1"]
+
+  # Deploy service image to Cloud Run
+  - name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
+    args:
+      - -c
+      - >
+        gcloud
+        run deploy v1-fastapi-example
+        --cpu 1
+        --memory 256M
+        --max-instances 1
+        --image gcr.io/chmoder-site/fastapi-example:v1
+        --region us-central1
+        --platform managed
+        --allow-unauthenticated
+
+  # Apply domain mapping. Cheap idempotency by ignoring failures.
+  - name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
+    args:
+      - -c
+      - >
+        gcloud
+        run domain-mappings create
+        --service v1-fastapi-example
+        --domain fastapi-example.chmoder.org
+        --region us-central1
+        || true
