@@ -42,7 +42,7 @@ def table_has_items() -> bool:
     return bool(session.query(MovieTitlesORM.id).count())
 
 
-@app.post("/movies/populate")
+@app.post("/v1/movies/populate")
 async def populate():
     if table_has_items():
         return
@@ -72,7 +72,7 @@ async def populate():
         save_batch(sqla_movie_titles)
 
 
-@app.get("/movies/search")
+@app.get("/v1/movies/search")
 async def search(title: typing.Optional[str] = None, director: typing.Optional[str] = None):
     stmt = select(MovieTitlesORM)
     searchable_field_names = ["title", "director"]
@@ -104,7 +104,7 @@ async def search(title: typing.Optional[str] = None, director: typing.Optional[s
     return res
 
 
-@app.get("/movies/{id}")
+@app.get("/v1/movies/{id}")
 async def get_movie_by_id(_id: int):
     stmt = select(MovieTitlesORM)
     stmt = stmt.where(MovieTitlesORM.id == _id)
